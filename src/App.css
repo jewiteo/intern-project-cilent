@@ -1,0 +1,43 @@
+
+
+
+.container, .container-fluid {
+
+    margin: auto;
+    width: 95%;
+}
+
+.AddAcronymForm {
+    margin: 50px;
+    border: double;
+    background-color: #e6eaf2;
+}
+
+.RowMargin{
+    margin:20px
+}
+
+.searchBar {
+    margin: auto;
+    width: 93%;
+    border-top: solid;
+    border-color: #a3a3a3;
+}
+
+.title {
+    margin-left:50px;
+    margin-top:25px;
+
+}
+
+.formTitle {
+
+    margin-left: 20px;
+    margin-top: 15px;
+    
+}
+
+.right {
+    margin-left: 85%;
+
+}
