@@ -105,13 +105,29 @@ class AcronymList extends Component {
                 'Content-Type': 'application/json'
             }
         });
-        if (acronyms.length === 1 && page !== 0) {
+
+        await fetch('api/acronym/changes/'+id, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (acronyms.length === 1 && page !== 1) {
             const params = this.getRequestParams(searchTerm, page-1, pageSize);
             await this.retrieveAcronym(params);
             this.setState({ page: page - 1 });
         } else {
             const params = this.getRequestParams(searchTerm, page, pageSize);
             await this.retrieveAcronym(params);
+        }
+
+        if (this.state.selectedRowId === id) {
+            this.setState({
+                isSelected: false,
+                selected: []
+            });
         }
     }
 
@@ -174,7 +190,7 @@ class AcronymList extends Component {
             }];
 
         return (
-            <div>
+            <div className="changesTable">
                 <Container fluid>
                     <BootstrapTable
                         remote
@@ -290,17 +306,24 @@ class AcronymList extends Component {
 
     onSelectRow = (row, isSelect, rowIndex, e) => {
 
+
+        if (this.state.isDeleting) {
+            this.setState({ isDeleting: false });
+            return false;
+        }
+
         if (isSelect) {
             this.retrieveChanges(row.id);
-            //console.log(row);
             this.setState(() => ({
                 selected: [row.id],
-                isSelected: true
+                isSelected: true,
+                selectedRowId: row.id
             }));
         } else {
             this.setState(() => ({
                 selected: [],
-                isSelected: false
+                isSelected: false,
+                selectedRowId: null
             }));
         }
 
@@ -347,6 +370,12 @@ class AcronymList extends Component {
                 dataField: 'actions',
                 text: 'Actions',
                 formatter: this.buttonDelete,
+                events: {
+                    onClick: (e, column, columnIndex, row, rowIndex) => {
+                        this.setState({ isDeleting: true });
+                        return false;
+                    },
+                },
                 headerStyle: () => {
                     return { width: "5.5%" };
                 }
@@ -391,7 +420,7 @@ class AcronymList extends Component {
                 //console.log("column : " + column.dataField);
                 var changes = column.dataField + " was changed: " + oldValue + " => " + newValue;
                 var date = new Date();
-                var timestamp = date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear() + "\t" +
+                var timestamp = "Date : " + date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear() + "  | Time : " +
                     date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
                 var changeRecord = {
                     id: row.id,
@@ -461,8 +490,10 @@ class AcronymList extends Component {
                 updatedData[updatedAcronymIndex] = updatedAcronym;
                 console.log(updatedData);
                 this.setState({ acronyms: updatedData });
-                this.retrieveChanges(row.id);
 
+                setTimeout(() => {
+                    this.retrieveChanges(row.id);
+                }, 500);
             }
         });
 
