@@ -153,7 +153,7 @@ class AcronymList extends Component {
        
         const params = this.getRequestParams(searchTerm, page, pageSize);
         await this.retrieveAcronym(params);
-    }
+    } 
 
     async findAcronym(filterVal) {
         const response = await fetch('/api/acronym/all/' + filterVal +
@@ -212,7 +212,6 @@ class AcronymList extends Component {
         };
 
         let populateDropdown = languages.map(function (item, i) {
-            
             return (
                 <Dropdown.Item eventKey={item} key={i}>{item}</Dropdown.Item>
             )
@@ -227,11 +226,13 @@ class AcronymList extends Component {
                     <Row className="RowMargin">
                         <Col>
                             <Form.Label>Acronym</Form.Label>
-                            <Form.Control placeholder="Acronym" ref={input => this.acronymInput = input}/>
+                            <Form.Control placeholder="Acronym" ref={input => this.acronymInput = input} />
+                            
                         </Col>
                         <Col>
                             <Form.Label>Full Term</Form.Label>
                             <Form.Control placeholder="Full Term" ref={input => this.full_termInput = input} />
+                            
                         </Col>
                     </Row>
                     <Row className="RowMargin">
@@ -249,12 +250,30 @@ class AcronymList extends Component {
                         </Col>
                         <Col>
                             <Button variant="success" className="right" onClick={() => {
-                                this.setState({ isAdding: false, language:"ENGLISH" });
-                                console.log(this.remarkInput.value);
-                                this.addNewAcronym()
-                                this.remarkInput.value = "";
-                                this.acronymInput.value = "";
-                                this.full_termInput.value = "";
+
+                                if (this.acronymInput.value != "" && this.full_termInput.value != "") {
+                                    if ((this.remarkInput.value.length < 200) && (this.acronymInput.value.length < 20)
+                                        && (this.full_termInput.value.length < 100)) {
+
+                                        this.setState({ isAdding: false, language: "ENGLISH" });
+                                        console.log(this.remarkInput.value.length);
+                                        this.addNewAcronym()
+                                        this.remarkInput.value = "";
+                                        this.acronymInput.value = "";
+                                        this.full_termInput.value = "";
+
+                                    } else {
+
+                                        alert("Inputs too long for database");
+
+                                    }
+
+                                } else {
+
+                                    alert("Please enter a acronym and the full term");
+                                }
+
+
                             }}>Submit</Button>
                         </Col>
                          
@@ -265,7 +284,7 @@ class AcronymList extends Component {
                
             </div>
         );
-    }
+    } 
 
     handleTableChange = (type, { page, sizePerPage }) => {
         const { searchTerm } = this.state;
@@ -274,13 +293,18 @@ class AcronymList extends Component {
         console.log("page : " + page);
         console.log("pageSize : " + pageSize);
 
+        if (this.state.isSelected) {
+            this.setState({
+                isSelected: false,
+                selected: []
+            });
+        }
 
         if (type === 'pagination') {
             const params = this.getRequestParams(searchTerm, page, pageSize);
             console.log(params);
             this.retrieveAcronym(params);
             this.setState({ page: page, pageSize: sizePerPage });
-
         }
         
     }
@@ -294,6 +318,13 @@ class AcronymList extends Component {
         const onSearchTerm = setTimeout(() => {
             console.log(tempSearchTerm);
             this.setState({ searchTerm: tempSearchTerm, page: 1 });
+
+            if (this.state.isSelected) {
+                this.setState({
+                    isSelected: false,
+                    selected: []
+                });
+            }
 
             const { searchTerm, page, pageSize } = this.state;
             const formattedParams = this.getRequestParams(searchTerm, page, pageSize);
@@ -345,7 +376,8 @@ class AcronymList extends Component {
                 text: 'Acronym',
                 headerStyle: () => {
                     return { width: "10%" };
-                }
+                },
+                
         }, {
                 dataField: 'full_term',
                 text: 'Full Term',
@@ -364,7 +396,8 @@ class AcronymList extends Component {
                 editable: false,
                 headerStyle: () => {
                     return { width: "8%" };
-                }
+                },
+                classes: 'custom_cell'
         }, {
 
                 dataField: 'actions',
