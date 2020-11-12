@@ -139,7 +139,8 @@ class AcronymList extends Component {
             acronym: this.acronymInput.value,
             full_term: this.full_termInput.value,
             remark: this.remarkInput.value,
-            language: language
+            language: language,
+            creator: "admin" //temporary value 
         };
 
         await fetch('api/acronym/new', {
@@ -382,13 +383,13 @@ class AcronymList extends Component {
                 dataField: 'full_term',
                 text: 'Full Term',
                 headerStyle: () => {
-                    return { width: "40%" };
+                    return { width: "37.5%" };
                 }
         }, {
                 dataField: 'remark',
                 text: 'Remarks',
                 headerStyle: () => {
-                    return { width: "35%" };
+                    return { width: "32.5%" };
                 }
         }, {
                 dataField: 'language',
@@ -411,6 +412,12 @@ class AcronymList extends Component {
                 },
                 headerStyle: () => {
                     return { width: "5.5%" };
+                }
+            }, {
+                dataField: 'creator',
+                text: 'Creator',
+                headerStyle: () => {
+                    return { width: "5%" };
                 }
             }];
 
